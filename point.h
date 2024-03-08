@@ -8,7 +8,7 @@ typedef struct Point {
 } tPoint;
 
 
-int count_points(tPoint* point);
+int countPoints(tPoint* point);
 
 tPoint* findParent(tPoint* tree, int value);
 

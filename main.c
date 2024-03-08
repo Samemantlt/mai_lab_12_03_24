@@ -4,7 +4,7 @@
 int main()
 {
     tPoint p = showCli();
-    int result = count_points(&p);
-    printf("Count: %i\n", result);
+    int result = countPoints(&p);
+    printf("\nCount: %i\n", result);
     return 0;
 }

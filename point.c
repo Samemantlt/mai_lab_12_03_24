@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-int count_points(tPoint* point) {
+int countPoints(tPoint* point) {
     if (point == 0)
         return 0;
     
     int count = 1;
     for (int i = 0; i < point->nextCount; i++) {
-        count += count_points(&point->next[i]);
+        count += countPoints(&point->next[i]);
     }
     return count;
 }
