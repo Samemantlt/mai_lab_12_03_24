@@ -1,11 +1,10 @@
 #include <stdio.h>
-#include "point.h"
 #include "cli.h"
 
 int main()
 {
-    tPoint p = read();
+    tPoint p = showCli();
     int result = count_points(&p);
-    printf("%i\n", result);
+    printf("Count: %i\n", result);
     return 0;
 }

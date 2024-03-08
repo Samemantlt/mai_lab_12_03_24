@@ -1,11 +1,11 @@
-#include "point.h"
+#include "cli.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
 void printMenu(){
-    printf("\n\nMenu:\n");
+    printf("\n[MENU]:\n");
     printf("0 - Run program (count points)\n");
     printf("1 - Print tree\n");
     printf("2 - Add joint\n");
@@ -22,78 +22,42 @@ void printTree(tPoint* point, int offset) {
         printTree(&point->next[i], offset  + 1);
 }
 
-tPoint* find(tPoint* tree, int value) {
-    if (tree->value == value)
-        return tree;
-    
-    for (int i = 0; i < tree->nextCount; i++)
+void removePointMenu(tPoint* point) {
+    printf("[REMOVE]:\n");
+    printf("Enter point to delete: ");
+    int toDelte;
+    scanf("%i", &toDelte);
+    removePoint(point, toDelte);
+}
+
+void printTreeMenu(tPoint* point) {
+    printf("[TREE]:\n");
+    printTree(point, 0);
+}
+
+void addJointMenu(tPoint* point) {
+    printf("[ADD]:\n");
+    printf("Enter parent and new child (eg. 0 1): ");
+    int start, end;
+    scanf("%i %i", &start, &end);
+
+    tPoint* existing = find(point, end);
+    if (existing != NULL)
     {
-        tPoint* point = find(&tree->next[i], value);
-        if (point != NULL)
-            return point;
-    }
-
-    return NULL;
-}
-
-void addJoint(tPoint* point, int value) {
-    int newCount = point->nextCount + 1;
-    tPoint* newNext = malloc(newCount * sizeof(tPoint));
-    memcpy(newNext, point->next, point->nextCount);
-    newNext[newCount - 1].value = value;
-    newNext[newCount - 1].nextCount = 0;
-    newNext[newCount - 1].next = malloc(0);
-
-    free(point->next);
-    point->next = newNext;
-    point->nextCount = newCount;
-}
-
-bool hasDirectChild(tPoint* point, int value) {
-    for (int i = 0; i < point->nextCount; i++)
-        if (point->next[i].value == value)
-            return true;
-    
-    return false;
-}
-
-tPoint* findParent(tPoint* tree, int value) {
-    if (hasDirectChild(tree, value))
-        return tree;
-    
-    for (int i = 0; i < tree->nextCount; i++)
-    {
-        tPoint* point = findParent(&tree->next[i], value);
-        if (point != NULL)
-            return point;
-    }
-
-    return NULL;
-}
-
-void removePoint(tPoint* point, int value) {
-    tPoint* parent = findParent(point, value);
-    if (parent == NULL)
-    {
-        printf("Point not found %i", value);
+        printf("Point %i already exists", end);
         return;
     }
 
-    int newCount = parent->nextCount - 1;
-    tPoint* newNext = malloc(sizeof(tPoint) * newCount);
-
-    int newIndex = 0;
-    for (int i = 0; i < parent->nextCount; i++) {
-        if (parent->next[i].value != value)
-            newNext[newIndex++] = parent->next[i];
+    tPoint* from = find(point, start);
+    if (from == NULL){
+        printf("Point %i not found", start);
+        return;
     }
 
-    free(parent->next);
-    parent->next = newNext;
-    parent->nextCount = newCount;
+    addJoint(from, end);
 }
 
-tPoint read(){
+tPoint showCli(){
     tPoint point;
     point.value = 0;
     point.next = malloc(0);
@@ -101,7 +65,6 @@ tPoint read(){
     
     while (true) {
         printMenu();
-        printf("executed");
         int selection;
         scanf("%i", &selection);
 
@@ -109,25 +72,13 @@ tPoint read(){
             case 0:
                 return point;
             case 1:
-                printTree(&point, 0);
+                printTreeMenu(&point);
                 break;
             case 2:
-                int start, end;
-                scanf("%i %i", &start, &end);
-
-                tPoint* from = find(&point, start);
-                if (from == NULL){
-                    printf("Point %i not found", start);
-                    break;
-                }
-
-                addJoint(from, end);
+                addJointMenu(&point);
                 break;
             case 3:
-                int toDelte;
-                scanf("%i", &toDelte);
-                tPoint* parent = findParent(&point, toDelte);
-
+                removePointMenu(&point);
                 break;
         }
     }

@@ -1,6 +1,7 @@
 #include "point.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int count_points(tPoint* point) {
     if (point == 0)
@@ -13,53 +14,74 @@ int count_points(tPoint* point) {
     return count;
 }
 
-typedef struct {
-    int start;
-    int end;
-} tJoint;
-
-/*
-tPoint createFrom(int index, tJoint* joints, int jointsCount) {
-    int nextCount = 0;
-    for (int i = 0; i < jointsCount; i++) {
-        if (joints[i].start == index)
-            nextCount++;
-    }
-
-    tPoint point;
-    point.value = index;
-    point.nextCount = nextCount;
-    if (nextCount == 0){
-        point.next = NULL;
-        return point;
-    }
-    point.next = malloc(sizeof(tPoint) * nextCount);
+tPoint* find(tPoint* tree, int value) {
+    if (tree->value == value)
+        return tree;
     
-    int nextIndex = 0;
-    for (int i = 0; i < jointsCount; i++) {
-        if (joints[i].start == index)
-            point.next[nextIndex++] = createFrom(joints[i].end, joints, jointsCount);
+    for (int i = 0; i < tree->nextCount; i++)
+    {
+        tPoint* point = find(&tree->next[i], value);
+        if (point != NULL)
+            return point;
     }
 
-    return point;
+    return NULL;
 }
 
-tPoint read() {
-    FILE* file = fopen("123.txt", "r");
 
-    int jointsCount;
-    fscanf(file,"%i", &jointsCount);
+bool hasDirectChild(tPoint* point, int value) {
+    for (int i = 0; i < point->nextCount; i++)
+        if (point->next[i].value == value)
+            return true;
+    
+    return false;
+}
 
-    tJoint* joints = malloc(sizeof(tJoint) * jointsCount);
-
-    for (int i = 0; i < jointsCount; i++) {
-        int start, end;
-        fscanf(file,"%i %i", &start, &end);
-
-        joints[i].start = start;
-        joints[i].end = end;
+tPoint* findParent(tPoint* tree, int value) {
+    if (hasDirectChild(tree, value))
+        return tree;
+    
+    for (int i = 0; i < tree->nextCount; i++)
+    {
+        tPoint* point = findParent(&tree->next[i], value);
+        if (point != NULL)
+            return point;
     }
 
-    return createFrom(0, joints, jointsCount);
+    return NULL;
 }
-*/
+
+void addJoint(tPoint* point, int value) {
+    int newCount = point->nextCount + 1;
+    tPoint* newNext = malloc(newCount * sizeof(tPoint));
+    memcpy(newNext, point->next, point->nextCount * sizeof(tPoint));
+    newNext[newCount - 1].value = value;
+    newNext[newCount - 1].nextCount = 0;
+    newNext[newCount - 1].next = malloc(0);
+
+    free(point->next);
+    point->next = newNext;
+    point->nextCount = newCount;
+}
+
+void removePoint(tPoint* point, int value) {
+    tPoint* parent = findParent(point, value);
+    if (parent == NULL)
+    {
+        printf("Point not found %i", value);
+        return;
+    }
+
+    int newCount = parent->nextCount - 1;
+    tPoint* newNext = malloc(sizeof(tPoint) * newCount);
+
+    int newIndex = 0;
+    for (int i = 0; i < parent->nextCount; i++) {
+        if (parent->next[i].value != value)
+            newNext[newIndex++] = parent->next[i];
+    }
+
+    free(parent->next);
+    parent->next = newNext;
+    parent->nextCount = newCount;
+}

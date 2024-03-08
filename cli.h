@@ -1,4 +1,4 @@
 #include "point.h"
 
 
-tPoint read();
+tPoint showCli();

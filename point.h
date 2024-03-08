@@ -1,4 +1,4 @@
-#pragma once
+#include <stdbool.h>
 
 typedef struct Point {
     int value;
@@ -10,4 +10,12 @@ typedef struct Point {
 
 int count_points(tPoint* point);
 
-tPoint read();
+tPoint* findParent(tPoint* tree, int value);
+
+bool hasDirectChild(tPoint* point, int value);
+
+tPoint* find(tPoint* tree, int value);
+
+void addJoint(tPoint* point, int value);
+
+void removePoint(tPoint* point, int value);
