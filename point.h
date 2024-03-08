@@ -19,3 +19,5 @@ tPoint* find(tPoint* tree, int value);
 void addJoint(tPoint* point, int value);
 
 void removePoint(tPoint* point, int value);
+
+void freeArray(tPoint* point, int count);

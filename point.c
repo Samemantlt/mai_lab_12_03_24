@@ -77,11 +77,22 @@ void removePoint(tPoint* point, int value) {
 
     int newIndex = 0;
     for (int i = 0; i < parent->nextCount; i++) {
-        if (parent->next[i].value != value)
+        if (parent->next[i].value != value) {
             newNext[newIndex++] = parent->next[i];
+        } else {
+            tPoint toRemove = parent->next[i];
+            freeArray(toRemove.next, toRemove.nextCount);
+        }
     }
 
     free(parent->next);
     parent->next = newNext;
     parent->nextCount = newCount;
+}
+
+void freeArray(tPoint* point, int count) {
+    for (int i = 0; i < count; i++) {
+        freeArray(point[i].next, point[i].nextCount);
+    }
+    free(point);
 }
