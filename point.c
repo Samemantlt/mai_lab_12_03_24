@@ -65,6 +65,12 @@ void addJoint(tPoint* point, int value) {
 }
 
 void removePoint(tPoint* point, int value) {
+    if (point->value == value) {
+        freeArray(point->next, point->nextCount);
+        point->next = malloc(0);
+        point->nextCount = 0;
+    }
+
     tPoint* parent = findParent(point, value);
     if (parent == NULL)
     {
